@@ -24,8 +24,12 @@ function sendRequest($filePath) {
     if ($result === FALSE) {
         // Handle error
         echo "Failed to send print request";
+
+        return false;
     } else {
         echo "Print request sent successfully";
+
+        return true;
     }
 }
 
@@ -51,10 +55,24 @@ $pdfFiles = array_filter($files, function($file) {
     return pathinfo($file, PATHINFO_EXTENSION) === 'pdf';
 });
 
+$canSendRequest=true;
+
 //start printing files
 foreach ($pdfFiles as $file) {
+
     //send each request
-    sendRequest($directory . $file);
-    //move files in order to not confuse printed and no printed files
-    moveFile($file);
+    if($canSendRequest){
+        //check if the previous request was successfully
+        if(sendRequest($directory . $file)){
+            $canSendRequest=true;
+            //move files in order to not confuse printed and no printed files
+            moveFile($file);
+        }else{
+            //block new printing
+            $canSendRequest=false;
+        }
+    }
+
+    //wait for 5 seconds before printing another document
+    sleep(5);
 }
