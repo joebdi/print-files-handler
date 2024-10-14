@@ -1,4 +1,6 @@
 <?php
+//set the time a script should execute  to 24 hours
+set_time_limit(86400);
 
 //!!!important!!! 
 // create a data folder whithin your project
